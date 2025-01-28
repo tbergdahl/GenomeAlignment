@@ -13,6 +13,17 @@
           "panel": "new"
         },
         "problemMatcher": []
+      },
+      {
+        "label": "Run Binary",
+        "type": "shell",
+        "command": "./target/debug/Programming-Assignment-1.exe",
+        "group": "none",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        },
+        "problemMatcher": []
       }
     ]
   }
