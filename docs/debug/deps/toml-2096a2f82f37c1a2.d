@@ -1,0 +1,13 @@
+C:\Users\trent\Documents\Spring 2025\CPTS 471\Programming Assignment 1\docs\debug\deps\libtoml-2096a2f82f37c1a2.rmeta: C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\lib.rs C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\map.rs C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\value.rs C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\de.rs C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\ser.rs C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\macros.rs C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\edit.rs C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\fmt.rs C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\table.rs
+
+C:\Users\trent\Documents\Spring 2025\CPTS 471\Programming Assignment 1\docs\debug\deps\toml-2096a2f82f37c1a2.d: C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\lib.rs C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\map.rs C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\value.rs C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\de.rs C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\ser.rs C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\macros.rs C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\edit.rs C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\fmt.rs C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\table.rs
+
+C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\lib.rs:
+C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\map.rs:
+C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\value.rs:
+C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\de.rs:
+C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\ser.rs:
+C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\macros.rs:
+C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\edit.rs:
+C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\fmt.rs:
+C:\Users\trent\.cargo\registry\src\index.crates.io-6f17d22bba15001f\toml-0.8.19\src\table.rs:

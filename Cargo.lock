@@ -3,7 +3,7 @@
 version = 4
 
 [[package]]
-name = "PA1_Bergdahl"
+name = "Programming-Assignment-1"
 version = "0.1.0"
 dependencies = [
  "confy",
