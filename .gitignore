@@ -1,2 +1,4 @@
 /target
-*.hmtl
+!*.hmtl
+!*.rmeta
+!*.rlib
