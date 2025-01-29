@@ -1,7 +1,7 @@
 mod cell;  // to construct table
 mod parse; // to parse file
 
-use parse::parse::{get_config, Params, extract_sequences};
+use parse::{get_config, Params, extract_sequences};
 
 fn main() -> ()
 {
