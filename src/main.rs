@@ -16,6 +16,9 @@ fn main() -> ()
     {
         Ok(sequences) =>
         {
+            println!("S1: {:?}", sequences[0].clone());
+            println!("S2: {:?}", sequences[1].clone());
+
             println!("Local: \n\n");
             let mut stats = run_alignment(sequences[0].clone(), sequences[1].clone(), AlignmentType::Local, &params);
             print_stats(&stats);

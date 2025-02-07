@@ -70,6 +70,11 @@ fn global_align(s1: &String, s2: &String, params: &Params) -> Result
         }
     }
 
+    for row in &table
+    {
+        println!("{:?}", row);
+    }
+
     backtrace_and_construct_sequences(&table, &params, &s1, &s2, s1.len(), s2.len())
 }
 
@@ -87,8 +92,113 @@ fn backtrace_and_construct_sequences(table: &Vec<Vec<DPCell>>,params: &Params,  
 
     // find max cell at T(i, j)
     let mut max_cell_val = max(max(table[i][j].ins_score, table[i][j].del_score), table[i][j].sub_score);
-    let mut score = max_cell_val;
-    while (i > 0 && j > 0)
+    let score = max_cell_val;
+    while i > 0 && j > 0
+    {
+        if max_cell_val == table[i][j].ins_score // if our max value came from computing from I direction
+        {
+            stats.s2 += s2[j - 1].to_string().as_str();
+            stats.s1 += "-";
+            stats.gap_count += 1;
+
+            j -= 1;
+            // calculate max value for the cell we will be visiting next to be checked next iteration
+            let next_cell = table[i][j].clone();
+            if (next_cell.ins_score + params.g) == max_cell_val
+            {
+                max_cell_val = next_cell.ins_score;
+            }
+            else if (next_cell.del_score + params.g + params.h) == max_cell_val
+            {
+                max_cell_val = next_cell.del_score;
+            }
+            else 
+            {
+                max_cell_val = next_cell.sub_score;
+            }    
+        }
+        else if max_cell_val == table[i][j].del_score
+        {
+            stats.s1 += s1[i - 1].to_string().as_str();
+            i -= 1;
+            stats.s2 += "-";
+            stats.gap_count += 1;
+            
+
+            // calculate max value for the cell we will be visiting next to be checked next iteration
+            let next_cell = table[i][j].clone();
+            if (next_cell.del_score + params.g) == max_cell_val
+            {
+                max_cell_val = next_cell.del_score;
+            }
+            else if (next_cell.ins_score + params.g + params.h) == max_cell_val
+            {
+                max_cell_val = next_cell.ins_score;
+            }
+            else 
+            {
+                max_cell_val = next_cell.sub_score;
+            } 
+        }
+        else 
+        {
+            stats.s1 += s1[i - 1].to_string().as_str();
+            stats.s2 += s2[j - 1].to_string().as_str();
+            i -= 1;
+            j -= 1;
+
+            // calculate max value for the cell we will be visiting next to be checked next iteration
+            let next_cell = table[i][j].clone();
+            if (next_cell.sub_score + cost_substitute(s1[i], s2[j], params, &mut stats)) == max_cell_val
+            {
+                max_cell_val = next_cell.sub_score;
+            }
+            else if (next_cell.ins_score + cost_substitute(s1[i], s2[j], params, &mut stats)) == max_cell_val
+            {
+                max_cell_val = next_cell.ins_score;
+            }
+            else 
+            {
+                max_cell_val = next_cell.del_score;
+            } 
+        }
+    }
+
+    // handle the case where there are gaps needed in the very front
+    while i > 0
+    {
+        i -= 1;
+        stats.s1 += s1[i - 1].to_string().as_str();
+        stats.s2 += "-";
+    }
+    while j > 0
+    {
+        stats.s2 += s2[j - 1].to_string().as_str();
+        stats.s1 += "-";
+        j -= 1;
+    }
+
+    stats.score = score;
+    stats
+}
+
+
+fn backtrace_and_construct_sequences2(table: &Vec<Vec<DPCell>>,params: &Params,  seq1: &String, seq2: &String, max_i: usize, max_j: usize) -> Result
+{
+
+    // create indexable strings to build up aligned strings
+    let s1 = seq1.chars().collect::<Vec<char>>();
+    let s2 = seq2.chars().collect::<Vec<char>>();
+
+    let mut i = max_i;
+    let mut j = max_j;
+
+    let mut stats = Result::default();
+
+    // find max cell at T(i, j)
+    let mut max_cell_val = max(max(table[i][j].ins_score, table[i][j].del_score), table[i][j].sub_score);
+    let score = max_cell_val;
+    while i > 0 && j > 0 && max_cell_val != 0
     {
         if max_cell_val == table[i][j].ins_score // if our max value came from computing from I direction
         {
@@ -226,7 +336,7 @@ fn local_align(s1: &String, s2: &String, params: &Params) -> Result
         }
     }
     // backtrace starting from that position
-    backtrace_and_construct_sequences(&table, &params, s1, s2, i_max, j_max)
+    backtrace_and_construct_sequences2(&table, &params, s1, s2, i_max, j_max)
 }
 
 fn init_table(nrows: usize, ncols: usize, params: &Params) -> Vec<Vec<DPCell>>
