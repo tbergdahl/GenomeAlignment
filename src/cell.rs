@@ -1,5 +1,5 @@
 
-#[derive(Default, Clone)]
+#[derive(Clone)]
 pub struct DPCell
 {
     pub sub_score: i32, // Substitution score
@@ -16,5 +16,13 @@ impl std::fmt::Debug for DPCell
         .field("I", &self.ins_score)
         .finish()
         
+    }
+}
+
+impl std::default::Default for DPCell
+{
+    fn default() -> Self
+    {
+        DPCell{ sub_score: 0, del_score: 0, ins_score: 0 }
     }
 }
