@@ -70,11 +70,6 @@ fn global_align(s1: &String, s2: &String, params: &Params) -> Result
         }
     }
 
-    for row in &table
-    {
-        println!("{:?}", row);
-    }
-
     backtrace_and_construct_sequences(&table, &params, &s1, &s2, s1.len(), s2.len())
 }
 
@@ -92,7 +87,7 @@ fn backtrace_and_construct_sequences(table: &Vec<Vec<DPCell>>,params: &Params,  
 
     // find max cell at T(i, j)
     let mut max_cell_val = max(max(table[i][j].ins_score, table[i][j].del_score), table[i][j].sub_score);
-    let score = max_cell_val;
+    let mut score = max_cell_val;
     while i > 0 && j > 0
     {
         if max_cell_val == table[i][j].ins_score // if our max value came from computing from I direction
@@ -165,18 +160,29 @@ fn backtrace_and_construct_sequences(table: &Vec<Vec<DPCell>>,params: &Params,  
     }
 
     // handle the case where there are gaps needed in the very front
-    while i > 0
+    if j == 0
     {
-        i -= 1;
-        stats.s1 += s1[i - 1].to_string().as_str();
-        stats.s2 += "-";
+        score += params.h + ((i as i32) * params.g);
+        while i > 0
+        {   
+            stats.s1 += s1[i - 1].to_string().as_str();
+            stats.s2 += "-";
+            stats.gap_count += 1;
+            i -= 1;
+        }
     }
-    while j > 0
-    {
-        stats.s2 += s2[j - 1].to_string().as_str();
-        stats.s1 += "-";
-        j -= 1;
+    if i == 0
+    {  
+        score += params.h + ((j as i32) * params.g);
+        while j > 0
+        {
+            stats.s2 += s2[j - 1].to_string().as_str();
+            stats.s1 += "-";
+            stats.gap_count += 1;
+            j -= 1;
+        }
     }
+    
 
     stats.score = score;
     stats
