@@ -27,9 +27,6 @@ pub struct Params {
     
     // initial gap penalty - applied for every gap, regardless of its relation to others.
     pub g: i32, 
-
-    // alignment type - 0 for global, 1 for local
-    pub align_type: i32
 }
 
 impl std::fmt::Display for Params
@@ -62,7 +59,6 @@ pub fn get_config(filepath: &str) -> Params
                 mismatch_penalty: 0,
                 h: 0, 
                 g: 0,
-                align_type: 0
             }
         }
     }
@@ -99,7 +95,6 @@ pub fn extract_sequences<P>(filename: P) -> Result<(Vec<String>, Vec<String>), s
 }
 
 
-///
 ///  Takes lines from a file and flattens them into DNA sequences, ignoring non-sequence lines.
 ///  Also parses the names of the sequences.
 fn flatten_into_sequences(lines: &mut Vec<String>) -> (Vec<String>, Vec<String>)

@@ -2,13 +2,13 @@ use crate::cell::DPCell;
 use crate::parse::Params;
 use std::cmp::max;
 
-
 pub enum AlignmentType
 {
     Local,
     Global
 }
 
+/// Result struct to be consumed as a part of the public interface.
 #[derive(Default)]
 pub struct Result
 {
@@ -20,6 +20,7 @@ pub struct Result
     pub score: i32
 }
 
+/// Module public interface. Dispatches to local or global alignment.
 pub fn run_alignment(s1: String, s2: String, align_type: AlignmentType, params: &Params) -> Result
 {
     match align_type
@@ -36,6 +37,7 @@ pub fn run_alignment(s1: String, s2: String, align_type: AlignmentType, params: 
     
 }
 
+/// Performs global alignment on two input sequences.
 fn global_align(s1: &String, s2: &String, params: &Params) -> Result
 {
    let mut table = init_table(s1.len() + 1, s2.len() + 1, &params, false);
@@ -45,6 +47,7 @@ fn global_align(s1: &String, s2: &String, params: &Params) -> Result
     backtrace(&table, &params, &s1, &s2, s1.len(), s2.len(), false)
 }
 
+/// Performs local alignment on two input sequences.
 fn local_align(s1: &String, s2: &String, params: &Params) -> Result
 {
     let mut table = init_table(s1.len() + 1, s2.len() + 1, &params, true); 
@@ -71,6 +74,9 @@ fn local_align(s1: &String, s2: &String, params: &Params) -> Result
     backtrace(&table, &params, s1, s2, i_max, j_max, true)
 }
 
+
+/// Backtrace the optimal path and construct a Result containing the string representations of the aligned sequences.
+/// Pre: Table must be computed for the correct path to be constructed.
 fn backtrace(table: &Vec<Vec<DPCell>>,params: &Params,  seq1: &String, seq2: &String, max_i: usize, max_j: usize, is_local: bool) -> Result
 {
     let s1: Vec<char> = seq1.chars().collect();
@@ -120,30 +126,29 @@ fn backtrace(table: &Vec<Vec<DPCell>>,params: &Params,  seq1: &String, seq2: &St
 
     if !is_local 
     {
-
         // handle the case where there are gaps needed in the very front
-    if j == 0
-    {
-        score += params.h + ((i as i32) * params.g);
-        while i > 0
-        {   
-            stats.s1 += s1[i - 1].to_string().as_str();
-            stats.s2 += "-";
-            stats.gap_count += 1;
-            i -= 1;
-        }
-    }
-    if i == 0
-    {  
-        score += params.h + ((j as i32) * params.g);
-        while j > 0
+        if j == 0
         {
-            stats.s2 += s2[j - 1].to_string().as_str();
-            stats.s1 += "-";
-            stats.gap_count += 1;
-            j -= 1;
+            score += params.h + ((i as i32) * params.g);
+            while i > 0
+            {   
+                stats.s1 += s1[i - 1].to_string().as_str();
+                stats.s2 += "-";
+                stats.gap_count += 1;
+                i -= 1;
+            }
         }
-    }
+        if i == 0
+        {  
+            score += params.h + ((j as i32) * params.g);
+            while j > 0
+            {
+                stats.s2 += s2[j - 1].to_string().as_str();
+                stats.s1 += "-";
+                stats.gap_count += 1;
+                j -= 1;
+            }
+        }
     }
 
     stats.score = score;
@@ -152,7 +157,7 @@ fn backtrace(table: &Vec<Vec<DPCell>>,params: &Params,  seq1: &String, seq2: &St
     stats
 }
 
-
+/// Computes a table for the alignment algorithms using dynamic programming
 fn calc_table(table: &mut Vec<Vec<DPCell>>, s1: &str, s2: &str, params: &Params, is_local: bool)
 {
     let s1_vec: Vec<char> = s1.chars().collect();
@@ -184,7 +189,7 @@ fn calc_table(table: &mut Vec<Vec<DPCell>>, s1: &str, s2: &str, params: &Params,
     }
 }
 
-
+/// Takes the current cell's max score and computes, in the I direction, where it came from.
 fn compute_i_max(max_cell_val: i32, params: &Params, next_cell: &DPCell) -> i32
 {
     if (next_cell.ins_score + params.g) == max_cell_val
@@ -201,6 +206,8 @@ fn compute_i_max(max_cell_val: i32, params: &Params, next_cell: &DPCell) -> i32
     }    
 }
 
+
+/// Takes the current cell's max score and computes, in the D direction, where it came from.
 fn compute_d_max(max_cell_val: i32, params: &Params, next_cell: &DPCell) -> i32
 {
     if (next_cell.del_score + params.g) == max_cell_val
@@ -217,6 +224,7 @@ fn compute_d_max(max_cell_val: i32, params: &Params, next_cell: &DPCell) -> i32
     } 
 }
 
+/// Takes the current cell's max score and computes, in the S direction, where it came from.
 fn compute_s_max(max_cell_val: i32, params: &Params, next_cell: &DPCell, c1: char, c2: char, stats: &mut Result) -> i32
 {
     if (next_cell.sub_score + cost_substitute(c1, c2, params, stats)) == max_cell_val
@@ -233,6 +241,7 @@ fn compute_s_max(max_cell_val: i32, params: &Params, next_cell: &DPCell, c1: cha
     } 
 }
 
+/// Determines which substitution case is needed and updates the match/mismatch count
 fn cost_substitute(c1: char, c2: char, params: &Params, stats: &mut Result) -> i32
 {
     if c1 == c2
@@ -247,9 +256,7 @@ fn cost_substitute(c1: char, c2: char, params: &Params, stats: &mut Result) -> i
     }
 }
 
-
-
-
+/// Creates an empty 2D table to be used in the alignment algorithms
 fn init_table(nrows: usize, ncols: usize, params: &Params, is_local: bool) -> Vec<Vec<DPCell>>
 {
     let mut table = vec![vec![DPCell::default(); ncols]; nrows];

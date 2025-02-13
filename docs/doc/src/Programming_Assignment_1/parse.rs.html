@@ -115,7 +115,26 @@
 <a href="#114" id="114">114</a>
 <a href="#115" id="115">115</a>
 <a href="#116" id="116">116</a>
-<a href="#117" id="117">117</a></pre></div><pre class="rust"><code>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a></pre></div><pre class="rust"><code>
 <span class="doccomment">//! Module to parse input files for PA1.
 //! 
 //! Parses configurations of match, mismatch, gap, and consecutive gap penalties.
@@ -128,8 +147,9 @@
 <span class="kw">use </span>std::path::Path;
 <span class="kw">use </span>confy::ConfyError;
 <span class="kw">use </span>serde::{Serialize, Deserialize};<span class="comment">// for config file
+</span><span class="kw">use </span>std::fmt::Formatter;
 
-</span><span class="doccomment">/// A configuration struct to specify params used in the Global and Local Alignment Algorithms.
+<span class="doccomment">/// A configuration struct to specify params used in the Global and Local Alignment Algorithms.
 </span><span class="attr">#[derive(Serialize, Deserialize, Default, Debug)]
 </span><span class="kw">pub struct </span>Params {
     <span class="comment">// bonus for a match 
@@ -143,6 +163,18 @@
     
     <span class="comment">// initial gap penalty - applied for every gap, regardless of its relation to others.
     </span><span class="kw">pub </span>g: i32, 
+
+    <span class="comment">// alignment type - 0 for global, 1 for local
+    </span><span class="kw">pub </span>align_type: i32
+}
+
+<span class="kw">impl </span>std::fmt::Display <span class="kw">for </span>Params
+{
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::result::Result&lt;(), std::fmt::Error&gt; 
+    { 
+        <span class="macro">write!</span>(f, <span class="string">"Match Bonus: {}\nMismatch Penalty: {}\nInitial Gap Penalty: {}\nGap Penalty: {}\n"</span>, 
+        <span class="self">self</span>.match_bonus, <span class="self">self</span>.mismatch_penalty, <span class="self">self</span>.h, <span class="self">self</span>.g)
+    }
 }
 
 <span class="doccomment">/// Extracts information from the file with the inputted name into a Param struct instance.
@@ -165,7 +197,8 @@
                 match_bonus: <span class="number">0</span>,
                 mismatch_penalty: <span class="number">0</span>,
                 h: <span class="number">0</span>, 
-                g: <span class="number">0
+                g: <span class="number">0</span>,
+                align_type: <span class="number">0
             </span>}
         }
     }
@@ -173,7 +206,7 @@
 
 <span class="doccomment">///    Function to extract DNA sequences in the .fasta file format.
 ///    Return: Collection of each sequence, as a String.
-</span><span class="kw">pub fn </span>extract_sequences&lt;P&gt;(filename: P) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;String&gt;, std::io::Error&gt; <span class="kw">where </span>P: AsRef&lt;Path&gt;,
+</span><span class="kw">pub fn </span>extract_sequences&lt;P&gt;(filename: P) -&gt; <span class="prelude-ty">Result</span>&lt;(Vec&lt;String&gt;, Vec&lt;String&gt;), std::io::Error&gt; <span class="kw">where </span>P: AsRef&lt;Path&gt;,
 {
     <span class="kw">if let </span><span class="prelude-val">Ok</span>(lines) = split_lines(filename)
     {
@@ -202,19 +235,24 @@
 }
 
 
-<span class="doccomment">///
-///  Takes lines from a file and flattens them into DNA sequences, ignoring non-sequence lines.
-///
-</span><span class="kw">fn </span>flatten_into_sequences(lines: <span class="kw-2">&amp;mut </span>Vec&lt;String&gt;) -&gt; Vec&lt;String&gt;
+<span class="doccomment">///  Takes lines from a file and flattens them into DNA sequences, ignoring non-sequence lines.
+///  Also parses the names of the sequences.
+</span><span class="kw">fn </span>flatten_into_sequences(lines: <span class="kw-2">&amp;mut </span>Vec&lt;String&gt;) -&gt; (Vec&lt;String&gt;, Vec&lt;String&gt;)
 {
     <span class="kw">let </span><span class="kw-2">mut </span>sequences: Vec&lt;String&gt; = Vec::new();
     <span class="kw">let </span><span class="kw-2">mut </span>sequence: String = String::new();
+
+    <span class="kw">let </span><span class="kw-2">mut </span>sequence_names: Vec&lt;String&gt; = Vec::new();
     <span class="kw">for </span>line <span class="kw">in </span>lines.iter()
     {
-        <span class="kw">if </span>(<span class="kw-2">*</span>line).contains(<span class="string">"&gt;"</span>) &amp;&amp; !sequence.trim().is_empty()
+        <span class="kw">if </span>(<span class="kw-2">*</span>line).contains(<span class="string">"&gt;"</span>)
         {
-            sequences.push(sequence.clone()); <span class="comment">// push is a move op, so move a clone of it
-            </span>sequence.clear();
+            <span class="kw">if </span>!sequence.is_empty()
+            {
+                sequences.push(sequence.clone()); <span class="comment">// push is a move op, so move a clone of it
+            </span>}
+            sequence_names.push((<span class="kw-2">*</span>line).strip_prefix(<span class="string">"&gt;"</span>).expect(<span class="string">"Something went wrong."</span>).to_string());
+            sequence.clear();
         }
         <span class="kw">else if </span>!(<span class="kw-2">*</span>line).contains(<span class="string">"&gt;"</span>) &amp;&amp; !line.trim().is_empty()
         {
@@ -222,7 +260,7 @@
         }
     }
     sequences.push(sequence);
-    sequences
+    (sequences, sequence_names)
 }
 
 <span class="doccomment">/// Takes an input file name and returns an iterator over each line in the file.

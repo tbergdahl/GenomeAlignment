@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["main"],"mod":["cell","parse"]};
+window.SIDEBAR_ITEMS = {"fn":["main","print_stats"],"mod":["alignment","cell","parse"]};

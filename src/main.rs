@@ -2,7 +2,9 @@ mod cell;  // to construct table
 mod parse; // to parse file
 mod alignment;
 
+use std::env;
 use std::io::Write;
+use parse::Params;
 
 use alignment::{AlignmentType, run_alignment, Result};
 use parse::{get_config, extract_sequences};
@@ -11,32 +13,34 @@ use parse::{get_config, extract_sequences};
 
 fn main() -> ()
 {
-    let params = get_config("params.config");
-    match extract_sequences("input.fasta")
+    let args: Vec<String> = env::args().collect();
+
+    // default param config
+    let mut params = Params {
+        match_bonus: 1,
+        mismatch_penalty: -2,
+        h: -5,
+        g: -2,
+    };
+
+    let align_int = args[2].parse::<i32>().unwrap();
+    let alignment_type = match align_int
+    {
+        0 => AlignmentType::Global,
+        1 => AlignmentType::Local,
+        _ => panic!("Invalid Alignment Type!"),
+    };
+
+    // optional params config
+    if args.len() > 3
+    {
+        params = get_config(&args[3]);
+    }
+    match extract_sequences(&args[1])
     {
         Ok(sequences) =>
         {
-
-            let mut stats = Result::default();
-            println!("{}: {}", sequences.1[0], sequences.0[0]);
-            println!("{}: {}", sequences.1[1], sequences.0[1]);
-            match params.align_type
-            {
-                0 =>
-                {
-                    println!("Performing Global Alignment...\n");
-                    stats = run_alignment(sequences.0[0].clone(), sequences.0[1].clone(), AlignmentType::Global, &params);
-                }
-                1 =>
-                {
-                    println!("Performing Local Alignment...\n");
-                    stats = run_alignment(sequences.0[1].clone(), sequences.0[1].clone(), AlignmentType::Local, &params);
-                }
-                _ =>
-                {
-                    panic!("Invalid Alignment Type Parameter.");
-                }
-            }
+            let stats = run_alignment(sequences.0[0].clone(), sequences.0[1].clone(), alignment_type, &params);
             print_stats(stats, &params);
         }
         Err(e) =>
